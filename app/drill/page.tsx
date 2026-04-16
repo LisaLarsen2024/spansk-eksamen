@@ -22,9 +22,18 @@ export default function DrillPage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showNo, setShowNo] = useState(true); // start with Norwegian, reveal Spanish
 
-  const cards = category === 'all'
+  // Spaced repetition: track wrong answers
+  const [wrongCards, setWrongCards] = useState<Set<number>>(new Set());
+  const [reviewMode, setReviewMode] = useState(false);
+
+  const baseCards = category === 'all'
     ? flashcards
     : flashcards.filter(c => c.category === category);
+
+  // In review mode, only show cards that were wrong
+  const cards = reviewMode
+    ? baseCards.filter((_, i) => wrongCards.has(i))
+    : baseCards;
 
   const card = cards[index];
   const total = cards.length;
@@ -32,21 +41,43 @@ export default function DrillPage() {
   const nextCard = useCallback((wasCorrect: boolean) => {
     if (wasCorrect) {
       setCorrect(c => c + 1);
-      if (index === total - 1) {
+      // Remove from wrong cards if reviewing
+      if (reviewMode) {
+        setWrongCards(prev => {
+          const next = new Set(prev);
+          const originalIdx = baseCards.indexOf(card);
+          next.delete(originalIdx);
+          return next;
+        });
+      }
+      if (index >= total - 1) {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 100);
       }
+    } else {
+      // Add to wrong cards for later review
+      const originalIdx = baseCards.indexOf(card);
+      setWrongCards(prev => new Set(prev).add(originalIdx));
     }
     setFlipped(false);
     setTimeout(() => {
-      setIndex(i => (i + 1) % total);
+      if (index < total - 1) {
+        setIndex(i => i + 1);
+      } else if (!reviewMode && wrongCards.size > 0) {
+        // Auto-switch to review mode
+        setReviewMode(true);
+        setIndex(0);
+        setCorrect(0);
+      }
     }, 300);
-  }, [index, total]);
+  }, [index, total, reviewMode, wrongCards, baseCards, card]);
 
   function reset() {
     setIndex(0);
     setCorrect(0);
     setFlipped(false);
+    setWrongCards(new Set());
+    setReviewMode(false);
   }
 
   if (!card) return null;

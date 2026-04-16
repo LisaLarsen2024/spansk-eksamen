@@ -21,11 +21,13 @@ export default function Home() {
   const totalTasks = 28;
 
   const sections = [
-    { href: '/lytt', emoji: '🎧', title: 'Lytt til podcasten', desc: '12 episoder med norsk + spansk', color: 'bg-rose', border: 'border-coral' },
-    { href: '/drill', emoji: '🃏', title: 'Drill flashcards', desc: 'Fraser og ord — trykk for å flippe!', color: 'bg-sky', border: 'border-ocean' },
-    { href: '/trening', emoji: '🎤', title: 'Mock-eksamen', desc: 'Øv med ekte sensorspørsmål + tidtaker', color: 'bg-peach', border: 'border-sun' },
-    { href: '/plan', emoji: '📋', title: '7-dagers plan', desc: 'Dag for dag — hak av når du er ferdig', color: 'bg-mint', border: 'border-success' },
-    { href: '/jukselapp', emoji: '📝', title: 'Jukselappen', desc: 'Alle fraser på ett sted', color: 'bg-rose', border: 'border-lavender' },
+    { href: '/lytt', emoji: '🎧', title: 'Lytt med manus', desc: 'Podcast + teleprompter — hør OG les!', color: 'bg-rose', border: 'border-coral' },
+    { href: '/drill', emoji: '🃏', title: 'Drill flashcards', desc: 'Smart repetisjon — svake kort kommer oftere', color: 'bg-sky', border: 'border-ocean' },
+    { href: '/trening', emoji: '🎤', title: 'Trening + opptak', desc: 'Mock-eksamen, 60-sek challenge, hør deg selv!', color: 'bg-peach', border: 'border-sun' },
+    { href: '/sensor', emoji: '🤖', title: 'AI-Sensor', desc: 'Snakk spansk med en AI — som ekte eksamen!', color: 'bg-sky', border: 'border-blue-400' },
+    { href: '/min-versjon', emoji: '✨', title: 'Min versjon', desc: 'Gjør svarene til DINE — personlig = husker', color: 'bg-peach', border: 'border-lavender' },
+    { href: '/plan', emoji: '📋', title: '7-dagers plan', desc: 'Dag for dag — hak av, se konfetti!', color: 'bg-mint', border: 'border-success' },
+    { href: '/jukselapp', emoji: '📝', title: 'Jukselappen', desc: 'Alle fraser på ett sted — ta screenshot!', color: 'bg-rose', border: 'border-lavender' },
   ];
 
   return (
