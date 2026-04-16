@@ -1,65 +1,79 @@
-import Image from "next/image";
+'use client';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import ProgressBar from '@/components/ProgressBar';
+
+function getProgress(): Record<string, boolean> {
+  if (typeof window === 'undefined') return {};
+  try {
+    return JSON.parse(localStorage.getItem('spansk-progress') || '{}');
+  } catch { return {}; }
+}
 
 export default function Home() {
+  const [progress, setProgress] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setProgress(getProgress());
+  }, []);
+
+  const completed = Object.values(progress).filter(Boolean).length;
+  const totalTasks = 28;
+
+  const sections = [
+    { href: '/lytt', emoji: '🎧', title: 'Lytt til podcasten', desc: '12 episoder med norsk + spansk', color: 'bg-rose', border: 'border-coral' },
+    { href: '/drill', emoji: '🃏', title: 'Drill flashcards', desc: 'Fraser og ord — trykk for å flippe!', color: 'bg-sky', border: 'border-ocean' },
+    { href: '/trening', emoji: '🎤', title: 'Mock-eksamen', desc: 'Øv med ekte sensorspørsmål + tidtaker', color: 'bg-peach', border: 'border-sun' },
+    { href: '/plan', emoji: '📋', title: '7-dagers plan', desc: 'Dag for dag — hak av når du er ferdig', color: 'bg-mint', border: 'border-success' },
+    { href: '/jukselapp', emoji: '📝', title: 'Jukselappen', desc: 'Alle fraser på ett sted', color: 'bg-rose', border: 'border-lavender' },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="max-w-lg mx-auto px-4 pt-6">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-black mb-2">Spansk Muntlig</h1>
+        <p className="text-5xl mb-3">🇪🇸</p>
+        <p className="text-xl font-bold text-coral">Du klarer dette!</p>
+        <p className="text-sm text-deep/60 mt-2">Alt du trenger for å bestå — på ett sted</p>
+      </div>
+
+      <div className="bg-white rounded-2xl p-4 shadow-sm mb-6">
+        <ProgressBar current={completed} total={totalTasks} label="Din progresjon" />
+        <p className="text-xs text-deep/50 mt-2 text-center">
+          {completed === 0
+            ? "Klar til å starte? Let's go! 🚀"
+            : completed < 10
+            ? `${completed} av ${totalTasks} oppgaver — bra start! 💪`
+            : completed < 20
+            ? `${completed} av ${totalTasks} — du er godt i gang! 🔥`
+            : `${completed} av ${totalTasks} — SJEF! Du eier dette! 👑`}
+        </p>
+      </div>
+
+      <div className="grid gap-3 mb-8">
+        {sections.map((s) => (
+          <Link
+            key={s.href}
+            href={s.href}
+            className={`${s.color} border-2 ${s.border} rounded-2xl p-4 flex items-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-transform`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <span className="text-3xl">{s.emoji}</span>
+            <div>
+              <h2 className="font-bold text-lg">{s.title}</h2>
+              <p className="text-sm text-deep/60">{s.desc}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="bg-gradient-to-br from-coral to-sun text-white rounded-2xl p-6 text-center mb-8">
+        <p className="text-lg font-bold mb-2">Husk:</p>
+        <p className="text-sm leading-relaxed">
+          Sensor leter etter det du KAN — ikke det du ikke kan.
+          Det er bedre å snakke mye med noen feil enn å si lite og &quot;perfekt&quot;.
+          Kommunikasjon slår perfeksjon!
+        </p>
+      </div>
+    </main>
   );
 }
