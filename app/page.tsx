@@ -39,6 +39,15 @@ export default function Home() {
         <p className="text-sm text-deep/60 mt-2">Alt du trenger for å bestå — på ett sted</p>
       </div>
 
+      {/* Første gang? */}
+      <Link
+        href="/guide"
+        className="block bg-ocean/10 border-2 border-ocean rounded-2xl p-4 mb-4 text-center hover:bg-ocean/20 transition-colors"
+      >
+        <p className="font-bold text-ocean">Første gang her? 👋</p>
+        <p className="text-xs text-deep/50">Trykk for en rask guide til hvordan du bruker appen</p>
+      </Link>
+
       <div className="bg-white rounded-2xl p-4 shadow-sm mb-6">
         <ProgressBar current={completed} total={totalTasks} label="Din progresjon" />
         <p className="text-xs text-deep/50 mt-2 text-center">

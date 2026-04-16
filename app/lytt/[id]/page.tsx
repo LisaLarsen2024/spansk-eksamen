@@ -25,6 +25,7 @@ export default function EpisodePage({ params }: { params: Promise<{ id: string }
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const segmentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   useEffect(() => {
     const audio = new Audio(`/audio/Episode_${String(epNum).padStart(2, '0')}.mp3`);
@@ -84,6 +85,20 @@ export default function EpisodePage({ params }: { params: Promise<{ id: string }
     }
   }
 
+  function skip(seconds: number) {
+    if (!audioRef.current) return;
+    audioRef.current.currentTime = Math.max(0, Math.min(duration, audioRef.current.currentTime + seconds));
+  }
+
+  function changeSpeed() {
+    if (!audioRef.current) return;
+    const speeds = [0.75, 1, 1.25];
+    const current = audioRef.current.playbackRate;
+    const nextIdx = (speeds.indexOf(current) + 1) % speeds.length;
+    audioRef.current.playbackRate = speeds[nextIdx];
+    setPlaybackRate(speeds[nextIdx]);
+  }
+
   function formatTime(s: number) {
     const m = Math.floor(s / 60);
     const sec = Math.floor(s % 60);
@@ -131,34 +146,54 @@ export default function EpisodePage({ params }: { params: Promise<{ id: string }
       </div>
 
       {/* Sticky audio player */}
-      <div className="fixed bottom-16 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-3 z-40">
+      <div className="fixed bottom-16 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-2 z-40">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center gap-3">
+          {/* Slider */}
+          <div className="mb-1">
+            <input
+              type="range"
+              min={0}
+              max={duration || 0}
+              value={currentTime}
+              onChange={seek}
+              className="w-full h-2 rounded-full appearance-none bg-gray-200 accent-coral"
+            />
+            <div className="flex justify-between text-[10px] text-deep/40">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
+          </div>
+          {/* Controls */}
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={() => setAutoScroll(!autoScroll)}
+              className={`text-[10px] px-2 py-1 rounded-full border ${autoScroll ? 'bg-ocean text-white border-ocean' : 'bg-white text-deep/40 border-gray-200'}`}
+            >
+              {autoScroll ? '📜 Auto' : '📜 Manuell'}
+            </button>
+            <button
+              onClick={() => skip(-15)}
+              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-deep/60 hover:bg-gray-200 active:scale-90 transition-all"
+            >
+              -15
+            </button>
             <button
               onClick={togglePlay}
-              className="w-12 h-12 bg-coral text-white rounded-full flex items-center justify-center text-xl flex-shrink-0 hover:bg-coral/90 active:scale-95 transition-all"
+              className="w-14 h-14 bg-coral text-white rounded-full flex items-center justify-center text-2xl flex-shrink-0 hover:bg-coral/90 active:scale-90 transition-all shadow-md"
             >
               {isPlaying ? '⏸' : '▶'}
             </button>
-            <div className="flex-1">
-              <input
-                type="range"
-                min={0}
-                max={duration || 0}
-                value={currentTime}
-                onChange={seek}
-                className="w-full h-2 rounded-full appearance-none bg-gray-200 accent-coral"
-              />
-              <div className="flex justify-between text-[10px] text-deep/40 mt-0.5">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            </div>
             <button
-              onClick={() => setAutoScroll(!autoScroll)}
-              className={`text-xs px-2 py-1 rounded-full border ${autoScroll ? 'bg-ocean text-white border-ocean' : 'bg-white text-deep/40 border-gray-200'}`}
+              onClick={() => skip(15)}
+              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-deep/60 hover:bg-gray-200 active:scale-90 transition-all"
             >
-              {autoScroll ? '📜 Auto' : '📜 Manuell'}
+              +15
+            </button>
+            <button
+              onClick={changeSpeed}
+              className="text-[10px] px-2 py-1 rounded-full border bg-white text-deep/60 border-gray-200 hover:bg-gray-100 font-bold"
+            >
+              {playbackRate}x
             </button>
           </div>
         </div>
